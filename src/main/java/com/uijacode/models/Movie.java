@@ -111,4 +111,8 @@ public class Movie {
                 ", rank=" + rank +
                 '}';
     }
+
+    public Content getContent() {
+        return new Content(this.title, this.image);
+    }
 }

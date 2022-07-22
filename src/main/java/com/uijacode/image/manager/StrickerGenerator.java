@@ -1,29 +1,38 @@
 package com.uijacode.image.manager;
 
+import com.uijacode.models.Content;
+
 import javax.imageio.ImageIO;
-import javax.imageio.ImageTypeSpecifier;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class StrickerGenerator {
-    public static void main(String[] args) throws IOException {
-        InputStream inputStream = new URL("https://imdb-api.com/images/original/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@.jpg").openStream();
-        InputStream fileInputStream = new FileInputStream(Paths.get("").toFile());
+    private final List<Content> contentList;
 
-        create(inputStream, "didks");
+    public StrickerGenerator(List<Content> contentList) {
+        this.contentList = contentList;
     }
 
-    public static void create(InputStream imageStream, String fileName) {
+    public void generateStickers() {
+        this.contentList.stream().limit(5).forEach(content -> {
+            try {
+                InputStream inputStream = new URL(content.getImageUrl()).openStream();
+
+                create(inputStream, content.getTitle());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
+    }
+
+    private void create(InputStream imageStream, String fileName) {
         try {
             BufferedImage originalImage = ImageIO.read(imageStream);
 
@@ -43,17 +52,11 @@ public class StrickerGenerator {
             graphics.setColor(Color.YELLOW);
             graphics.setFont(font);
 
-
             graphics.drawString(fileName, 0, originalImageHeight + 10);
-
 
             Path newImagePath = Paths.get("imagens/"+fileName+".png");
 
-
             ImageIO.write(newImage, "png", newImagePath.toFile());
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
